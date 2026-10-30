@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriAgent — AI-Powered Smart Agriculture & Irrigation Platform</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand-group">
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <a class="brand" href="#">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12a10 10 0 0 1 10-10z"></path>
+            <path d="M12 6v6l4 2"></path>
+            <path d="M7 16c2-3 8-3 10 0"></path>
+          </svg>
+        </div>
+        <div class="brand-text">Agri<span>Agent</span></div>
+      </a>
+      <span class="badge badge-platform">Platform 2.0</span>
+    </div>
+
+    <!-- Center Live Clock & Location Telemetry -->
+    <div class="topbar-center">
+      <div class="live-clock-pill">
+        <span class="location-dot"></span>
+        <span class="station-name">Farm Station Alpha</span>
+        <span class="clock-divider">·</span>
+        <span class="live-clock" id="liveClock">--:--:-- UTC</span>
+      </div>
+    </div>
+
+    <div class="top-meta">
+      <div class="system-status-indicator" id="systemPill" title="Backend health">
+        <span class="pulse-dot"></span>
+        <span id="systemStatusText">Backend Online</span>
+      </div>
+      <div class="provider-pill" id="providerPill" title="Configured AI Reasoning Engine">
+        <span class="sparkle">✧</span>
+        <span id="providerText">AI Engine: Loading...</span>
+      </div>
+      <div class="user-chip">
+        <span class="avatar-ring">AA</span>
+        <div class="user-details-mini">
+          <span class="user-name">Farm Operator</span>
+          <span class="user-role">Zone A · Precision Ag</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="nav-section-label">AGRICULTURE WORKSPACE</div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="overview">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </span>
+          <span>Overview</span>
+        </button>
+        <button class="nav-item" data-tab="irrigation">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+          </span>
+          <span>Smart Irrigation</span>
+        </button>
+        <button class="nav-item" data-tab="assistant">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M12 10h.01"></path></svg>
+          </span>
+          <span>AI Farm Assistant</span>
+        </button>
+        <button class="nav-item" data-tab="crop-advisory">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+          </span>
+          <span>Crop Advisory</span>
+        </button>
+        <button class="nav-item" data-tab="water-mgmt">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"></path><path d="M20 12v8H4v-8"></path><path d="m4 12 8-8 8 8"></path></svg>
+          </span>
+          <span>Water Management</span>
+        </button>
+        <button class="nav-item" data-tab="fields">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+          </span>
+          <span>Field Management</span>
+        </button>
+        <button class="nav-item" data-tab="analytics">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          </span>
+          <span>Analytics & History</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </span>
+          <span>System & Settings</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Telemetry Card -->
+      <div class="sidebar-telemetry-card">
+        <div class="telemetry-card-header">
+          <span class="telemetry-badge">TELEMETRY</span>
+          <span class="telemetry-live-dot"></span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-label">Active Soil Station:</span>
+          <strong class="telemetry-value">Node-4A (Loam)</strong>
+        </div>
+        <div class="telemetry-progress-bar">
+          <div class="telemetry-progress-fill" style="width: 68%;"></div>
+        </div>
+        <div class="telemetry-footer-text">Moisture status: <b>Optimal Target</b></div>
+      </div>
+
+      <div class="sidebar-promo">
+        <div class="promo-header">
+          <span class="promo-icon">🌾</span>
+          <h4>Sustainable Water Use</h4>
+        </div>
+        <p>Soil-specific deficit modeling cuts agricultural water waste by up to 30% without yield penalty.</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="hackathon-tag">AGENTX HACKATHON 2026</div>
+        <div class="version-tag">AgriAgent Architecture v2.0</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- ============================================================== -->
+      <!-- TAB 1: OVERVIEW / DASHBOARD                                    -->
+      <!-- ============================================================== -->
+      <section class="tab-pane active" id="pane-overview">
+        <!-- Premium Hero Welcome Banner -->
+        <div class="welcome-banner">
+          <div class="banner-pattern-overlay"></div>
+          <div class="welcome-copy">
+            <div class="section-eyebrow-light">INTELLIGENT AGRICULTURE PLATFORM</div>
+            <h1>Good day, <span class="highlight-banner">Farm Operator</span></h1>
+            <p>Real-time field monitoring, deterministic moisture deficit modeling, and autonomous ReAct AI agronomic guidance.</p>
+            
+            <div class="banner-quick-pills">
+              <span class="hero-pill">🌿 7 Supported Crops</span>
+              <span class="hero-pill">💧 Soil Texture Factors</span>
+              <span class="hero-pill">🧠 ReAct Autonomous Loop</span>
+              <span class="hero-pill">📊 Chart.js Analytics</span>
+            </div>
+          </div>
+          <div class="banner-actions">
+            <button class="btn btn-hero-secondary" onclick="switchTab('fields')">+ Register Field</button>
+            <button class="btn btn-hero-primary" onclick="switchTab('irrigation')">Run Irrigation Planner →</button>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">TOTAL FIELDS MONITORED</span>
+              <div class="stat-icon-wrapper green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statFieldsCount">3</div>
+            <div class="stat-subtext" id="statTotalArea">Tracking 12.7 total acres</div>
+            <div class="stat-badge-trend positive">● All plots active</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">AVERAGE SOIL MOISTURE</span>
+              <div class="stat-icon-wrapper blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statAvgMoisture">31.3%</div>
+            <div class="stat-subtext">Across monitored root zones</div>
+            <div class="stat-badge-trend neutral">Optimal band: 30% - 45%</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">TOTAL WATER RECOMMENDED</span>
+              <div class="stat-icon-wrapper amber">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statTotalWater">117,602 L</div>
+            <div class="stat-subtext" id="statRecCount">Based on 3 recommendations</div>
+            <div class="stat-badge-trend positive">≈ 29.0 mm total depth</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">REASONING AI AGENT</span>
+              <div class="stat-icon-wrapper emerald">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+              </div>
+            </div>
+            <div class="stat-value status-badge" id="statAgentStatus">Online</div>
+            <div class="stat-subtext" id="statProviderName">ReAct Agent Architecture</div>
+            <div class="stat-badge-trend positive">7 registered tools ready</div>
+          </div>
+        </div>
+
+        <!-- Two Column Overview Layout -->
+        <div class="dashboard-grid">
+          <!-- Left Column: Crop Monitoring & Water Trend -->
+          <div class="dashboard-col-left">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-eyebrow">FIELD SURVEILLANCE</div>
+                  <h3 class="card-title">Crop Monitoring Overview</h3>
+                </div>
+                <button class="btn btn-sm btn-ghost" onclick="switchTab('fields')">Manage All Fields →</button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="overviewFieldsTable">
+                  <thead>
+                    <tr>
+                      <th>Field Plot Name</th>
+                      <th>Crop Profile</th>
+                      <th>Soil Texture</th>
+                      <th>Area</th>
+                      <th>Zone Location</th>
+                      <th>Quick Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="overviewFieldsBody">
+                    <tr><td colspan="6" class="text-center empty-state">Loading active fields...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-eyebrow">ANALYTICS PREVIEW</div>
+                  <h3 class="card-title">Cumulative Water Allocation by Crop</h3>
+                </div>
+                <span class="badge badge-soft">Litres (L)</span>
+              </div>
+              <div class="chart-container" style="position: relative; height: 260px;">
+                <canvas id="cropWaterChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Weather Status & Recent Activities -->
+          <div class="dashboard-col-right">
+            <!-- Weather Status Card (Explicit non-fabricated state) -->
+            <div class="card weather-card">
+              <div class="card-header">
+                <div>
+                  <div class="card-eyebrow">METEOROLOGICAL TELEMETRY</div>
+                  <h3 class="card-title">Weather Service</h3>
+                </div>
+                <span class="badge badge-warning" id="weatherModeBadge">Manual Mode</span>
+              </div>
+              <div class="weather-notice-box">
+                <div class="notice-icon">🌤</div>
+                <div class="notice-body">
+                  <strong>Hardware & Weather API Status</strong>
+                  <p id="weatherStatusMsg">No external weather API key is linked. Operating in manual sensor parameter entry mode for hackathon demonstrations.</p>
+                </div>
+              </div>
+              <div class="weather-demo-metrics">
+                <div class="demo-metric-item">
+                  <small>Default Temp</small>
+                  <strong>32.0 °C</strong>
+                </div>
+                <div class="demo-metric-item">
+                  <small>Default Humidity</small>
+                  <strong>55.0%</strong>
+                </div>
+                <div class="demo-metric-item">
+                  <small>Rainfall Input</small>
+                  <strong>0.0 mm</strong>
+                </div>
+              </div>
+              <div class="weather-simulator-bar">
+                <small class="simulator-label">Simulate Conditions:</small>
+                <div class="sim-pill-group">
+                  <button class="sim-pill" onclick="simulateWeather(35, 45, 0)">☀️ Summer Dry</button>
+                  <button class="sim-pill" onclick="simulateWeather(24, 85, 15)">🌧 Rainy 15mm</button>
+                  <button class="sim-pill" onclick="simulateWeather(28, 60, 0)">⛅ Moderate</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Farming Activities -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-eyebrow">AUDIT TRAIL</div>
+                  <h3 class="card-title">Recent Farming Activities</h3>
+                </div>
+                <button class="btn btn-sm btn-ghost" onclick="switchTab('analytics')">View All</button>
+              </div>
+              <div class="activity-feed" id="activityFeed">
+                <div class="empty-state">No irrigation runs logged yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: SMART IRRIGATION PLANNER                                -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-irrigation">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">DECISION SUPPORT SYSTEM</div>
+            <h2>Smart Irrigation Planner</h2>
+            <p>Compute precise soil moisture deficit, water volume (Litres), and irrigation depth (mm).</p>
+          </div>
+          <div class="header-badges">
+            <span class="badge badge-success">Deterministic Python Engine</span>
+            <span class="badge badge-soft">Soil Permeability Calibrated</span>
+          </div>
+        </div>
+
+        <!-- Quick Scenario Presets Bar -->
+        <div class="scenario-presets-bar">
+          <span class="presets-label">⚡ QUICK SCENARIOS:</span>
+          <div class="presets-buttons">
+            <button class="preset-btn" onclick="applyPreset('rice', 30, 33, 65, 3.0, 'clayey', 0)">
+              <span class="preset-icon">🌾</span>
+              <span>Paddy Rice (Dry Season)</span>
+            </button>
+            <button class="preset-btn" onclick="applyPreset('wheat', 20, 30, 40, 5.0, 'loamy', 0)">
+              <span class="preset-icon">🌱</span>
+              <span>Highland Wheat (Water Stress)</span>
+            </button>
+            <button class="preset-btn" onclick="applyPreset('tomato', 26, 34, 48, 2.2, 'loamy', 0)">
+              <span class="preset-icon">🍅</span>
+              <span>Greenhouse Tomato</span>
+            </button>
+            <button class="preset-btn" onclick="applyPreset('cotton', 22, 36, 42, 4.0, 'clayey', 15)">
+              <span class="preset-icon">☁️</span>
+              <span>Cotton with 15mm Rain</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="planner-layout">
+          <!-- Planner Form Card -->
+          <div class="card planner-form-card">
+            <div class="form-section-title">
+              <span class="step-num">1</span>
+              <span>Crop & Plot Selection</span>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="planFieldSelect">Select Saved Parcel (Optional)</label>
+                <select id="planFieldSelect" class="form-control">
+                  <option value="">-- Manual Custom Entry --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="planCrop">Crop Type <span class="required">*</span></label>
+                <select id="planCrop" class="form-control">
+                  <option value="rice">Rice (Paddy) — High Water Demand</option>
+                  <option value="wheat">Wheat — Moderate Demand</option>
+                  <option value="maize">Maize (Corn) — Moderate Demand</option>
+                  <option value="tomato" selected>Tomato — High Sensitivity</option>
+                  <option value="cotton">Cotton — Deep Rooted</option>
+                  <option value="sugarcane">Sugarcane — Heavy Demand</option>
+                  <option value="groundnut">Groundnut (Peanut) — Low/Med Demand</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="planSoil">Soil Type & Permeability <span class="required">*</span></label>
+                <select id="planSoil" class="form-control">
+                  <option value="loamy" selected>Loamy (Balanced moisture retention — 1.00x)</option>
+                  <option value="sandy">Sandy (Fast drainage, requires +20% water)</option>
+                  <option value="clayey">Clayey (High retention, requires -15% water)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="planArea">Field Area (Acres) <span class="required">*</span></label>
+                <input type="number" id="planArea" class="form-control" min="0.01" max="10000" step="0.1" value="2.5">
+              </div>
+            </div>
+
+            <div class="form-section-title">
+              <span class="step-num">2</span>
+              <span>Soil & Ambient Telemetry</span>
+            </div>
+
+            <div class="form-group range-group">
+              <div class="range-header">
+                <label for="planMoisture">Current Soil Moisture</label>
+                <span class="range-value"><b id="valMoisture">28</b>%</span>
+              </div>
+              <input type="range" id="planMoisture" min="0" max="100" value="28" class="form-range">
+              <div class="range-scale">
+                <span>0% (Wilting Point)</span>
+                <span>Crop Target: <b id="targetMoistureBadge">38%</b></span>
+                <span>100% (Field Saturated)</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group range-group">
+                <div class="range-header">
+                  <label for="planTemp">Temperature</label>
+                  <span class="range-value"><b id="valTemp">32</b> °C</span>
+                </div>
+                <input type="range" id="planTemp" min="10" max="50" value="32" class="form-range">
+              </div>
+
+              <div class="form-group range-group">
+                <div class="range-header">
+                  <label for="planHumidity">Relative Humidity</label>
+                  <span class="range-value"><b id="valHumidity">50</b>%</span>
+                </div>
+                <input type="range" id="planHumidity" min="10" max="100" value="50" class="form-range">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="planRainfall">Recent Precipitation / Rainfall (mm)</label>
+              <div class="input-with-addon">
+                <input type="number" id="planRainfall" class="form-control" min="0" max="300" step="0.5" value="0.0" placeholder="0.0">
+                <span class="input-addon">mm rain</span>
+              </div>
+              <small class="field-hint">Effective rainfall (75% percolation) directly offsets gross irrigation requirement.</small>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary btn-lg full-width" id="btnCalculate">
+                <span>Calculate Irrigation Plan</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Planner Result Card with Dynamic Moisture Gauge -->
+          <div class="card planner-result-card" id="plannerResultBox">
+            <div class="empty-result-state" id="emptyResultState">
+              <div class="empty-icon-pulse">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#176B45" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+              </div>
+              <h3>Ready for Agronomic Evaluation</h3>
+              <p>Configure the parameters on the left or select a quick scenario to compute water volume, depth, and application priority.</p>
+              <button class="btn btn-secondary btn-sm" onclick="calculateIrrigation()">Run Demo Calculation Now →</button>
+            </div>
+
+            <div class="calculated-result-state hidden" id="calculatedResultState">
+              <div class="result-header">
+                <div>
+                  <span class="badge-priority" id="resPriority">High Priority</span>
+                  <h3 class="result-status-title" id="resStatus">Irrigation Recommended</h3>
+                </div>
+                <div class="crop-tag" id="resCropTag">Tomato</div>
+              </div>
+
+              <!-- Animated Circular Soil Moisture Gauge -->
+              <div class="gauge-card-box">
+                <div class="gauge-wrapper">
+                  <svg class="gauge-svg" viewBox="0 0 120 120">
+                    <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+                    <circle class="gauge-bar" id="gaugeArc" cx="60" cy="60" r="50"></circle>
+                  </svg>
+                  <div class="gauge-content">
+                    <span class="gauge-current" id="gaugeCurrentVal">28%</span>
+                    <span class="gauge-label">SOIL MOISTURE</span>
+                    <span class="gauge-target" id="gaugeTargetVal">Target: 38%</span>
+                  </div>
+                </div>
+                <div class="gauge-legend">
+                  <div class="legend-row"><span class="legend-dot red"></span><span>Deficit: <b id="resDeficitText">10.0%</b></span></div>
+                  <div class="legend-row"><span class="legend-dot green"></span><span>Target: <b id="resTargetText">38%</b></span></div>
+                  <div class="legend-row"><span class="legend-dot blue"></span><span>Soil Factor: <b id="resFactorText">1.00x</b></span></div>
+                </div>
+              </div>
+
+              <div class="metrics-grid">
+                <div class="metric-box highlighted">
+                  <span class="metric-title">WATER VOLUME</span>
+                  <span class="metric-number highlight-green" id="resLitres">34,500 L</span>
+                  <span class="metric-desc" id="resTankerEquiv">≈ 1.2 Water Tankers</span>
+                </div>
+                <div class="metric-box">
+                  <span class="metric-title">APPLICATION DEPTH</span>
+                  <span class="metric-number" id="resMm">3.8 mm</span>
+                  <span class="metric-desc">Effective root percolation</span>
+                </div>
+                <div class="metric-box">
+                  <span class="metric-title">MOISTURE DEFICIT</span>
+                  <span class="metric-number" id="resDeficit">10.0%</span>
+                  <span class="metric-desc" id="resMoistureRatio">28% / 38% target</span>
+                </div>
+                <div class="metric-box">
+                  <span class="metric-title">SOIL FACTOR</span>
+                  <span class="metric-number" id="resSoilFactor">1.00x</span>
+                  <span class="metric-desc" id="resSoilType">Loamy texture</span>
+                </div>
+              </div>
+
+              <div class="action-box">
+                <strong>Recommended Irrigation Action:</strong>
+                <p id="resAction">Apply a controlled irrigation cycle and recheck soil moisture after 6 hours.</p>
+              </div>
+
+              <div class="advisory-box">
+                <div class="advisory-icon">🌤</div>
+                <div class="advisory-text">
+                  <small>WEATHER & TIMING DIRECTIVE</small>
+                  <p id="resWeatherNote">Irrigate early morning or late evening to prevent evaporation losses.</p>
+                </div>
+              </div>
+
+              <div class="tip-box">
+                <div class="tip-icon">💡</div>
+                <div class="tip-text">
+                  <small>AGRONOMIC CONSERVATION STRATEGY</small>
+                  <p id="resWaterTip">Use drip irrigation paired with organic mulch to conserve root-zone moisture.</p>
+                </div>
+              </div>
+
+              <div class="disclaimer-footnote" id="resDisclaimer">
+                * Transparent demo estimate based on illustrative agronomic heuristics. Calibrate with local agricultural extension guidelines before field deployment.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: AI FARM ASSISTANT                                       -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-assistant">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">AGENTIC REASONING SYSTEM</div>
+            <h2>AgriAgent AI Assistant</h2>
+            <p>Interactive agriculture assistant powered by the Python ReAct loop (Thought → Action → Observation).</p>
+          </div>
+          <div class="header-badges">
+            <label class="dry-run-toggle" title="Test tool execution pipeline without requiring an active API key">
+              <input type="checkbox" id="dryRunToggle">
+              <span>Dry Run Mode (No API key needed)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="chat-container">
+          <!-- Chat Message Thread -->
+          <div class="chat-thread" id="chatThread">
+            <div class="chat-bubble assistant-bubble">
+              <div class="bubble-avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12a10 10 0 0 1 10-10z"></path><path d="M12 6v6l4 2"></path></svg>
+              </div>
+              <div class="bubble-content">
+                <div class="bubble-header-row">
+                  <span class="bubble-author">AgriAgent System</span>
+                  <span class="bubble-time">Ready</span>
+                </div>
+                <p>Hello! I am AgriAgent, your autonomous agriculture reasoning assistant. I can compute crop irrigation needs, look up soil thresholds, execute SQL queries against farm records, and suggest water-saving agronomic strategies.</p>
+                
+                <div class="quick-prompts">
+                  <span class="quick-prompt-label">Quick Prompts:</span>
+                  <div class="quick-prompt-chips">
+                    <button class="quick-chip" onclick="askPreset('How much water does rice need and what irrigation method is best?')">
+                      <span>🌾 Water needed for rice?</span>
+                    </button>
+                    <button class="quick-chip" onclick="askPreset('Which irrigation method is suitable for sandy soil with tomato crops?')">
+                      <span>🍅 Tomato on sandy soil?</span>
+                    </button>
+                    <button class="quick-chip" onclick="askPreset('How can I reduce water wastage using deficit irrigation and mulching?')">
+                      <span>💧 How to reduce water wastage?</span>
+                    </button>
+                    <button class="quick-chip" onclick="askPreset('What is the target soil moisture for wheat and what happens when it is low?')">
+                      <span>🌱 Moisture target for wheat?</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="chat-input-bar">
+            <div class="input-wrapper">
+              <textarea id="chatInput" rows="1" placeholder="Ask AgriAgent a farming question (e.g., 'What irrigation schedule is recommended for maize in sandy soil?')..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-send" id="btnSendQuestion">
+              <span>Send</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </div>
+
+          <!-- Tool Registry Legend -->
+          <div class="tool-legend">
+            <span class="legend-title">AVAILABLE REASONING TOOLS:</span>
+            <span class="tool-tag" title="Calculates water volume, depth and priority">irrigation_advisor</span>
+            <span class="tool-tag" title="Looks up crop thresholds and agronomic guidance">crop_guide</span>
+            <span class="tool-tag" title="Evaluates mathematical expressions">calculator</span>
+            <span class="tool-tag" title="Executes read-only SQL over CSV files">sql_query</span>
+            <span class="tool-tag" title="Reads local dataset files">read_file</span>
+            <span class="tool-tag" title="Lists task data files">list_files</span>
+            <span class="tool-tag" title="Searches DuckDuckGo for agriculture information">web_search</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: CROP ADVISORY                                           -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-crop-advisory">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">AGRONOMIC KNOWLEDGE BASE</div>
+            <h2>Crop Advisory & Thresholds</h2>
+            <p>Comprehensive crop requirements, soil compatibility, critical growth stages, and water management.</p>
+          </div>
+          <div class="filter-group">
+            <select id="cropFilterSoil" class="form-control form-control-sm">
+              <option value="all">All Soil Types</option>
+              <option value="loamy">Loamy Suitable</option>
+              <option value="sandy">Sandy Suitable</option>
+              <option value="clayey">Clayey Suitable</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="crop-cards-grid" id="cropCardsGrid">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 5: WATER MANAGEMENT & CONSERVATION CALCULATOR              -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-water-mgmt">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">CONSERVATION & EFFICIENCY</div>
+            <h2>Water Management & Benchmarks</h2>
+            <p>Optimize irrigation efficiency, minimize evaporation losses, and benchmark water demand across crops.</p>
+          </div>
+        </div>
+
+        <!-- Interactive Water Savings Calculator Card -->
+        <div class="card savings-calculator-card">
+          <div class="card-header">
+            <div>
+              <div class="card-eyebrow">INTERACTIVE ROI SIMULATOR</div>
+              <h3 class="card-title">Precision Irrigation Water Savings Calculator</h3>
+            </div>
+            <span class="badge badge-success">Water Conservation ROI</span>
+          </div>
+          <p class="savings-intro">Estimate water, electricity, and cost reductions achieved by transitioning from conventional flood irrigation to precision micro-irrigation (Drip or Sprinkler).</p>
+          
+          <div class="savings-calc-grid">
+            <div class="calc-inputs-col">
+              <div class="form-group range-group">
+                <div class="range-header">
+                  <label for="calcArea">Plot Acreage</label>
+                  <span class="range-value"><b id="valCalcArea">5</b> Acres</span>
+                </div>
+                <input type="range" id="calcArea" min="0.5" max="50" step="0.5" value="5" class="form-range" oninput="updateSavingsCalc()">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="calcCrop">Crop Profile</label>
+                  <select id="calcCrop" class="form-control" onchange="updateSavingsCalc()">
+                    <option value="rice">Rice (Paddy)</option>
+                    <option value="wheat">Wheat</option>
+                    <option value="maize">Maize (Corn)</option>
+                    <option value="tomato" selected>Tomato</option>
+                    <option value="cotton">Cotton</option>
+                    <option value="sugarcane">Sugarcane</option>
+                    <option value="groundnut">Groundnut</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="calcCycles">Seasonal Irrigation Cycles</label>
+                  <input type="number" id="calcCycles" class="form-control" min="1" max="50" value="8" oninput="updateSavingsCalc()">
+                </div>
+              </div>
+            </div>
+
+            <div class="calc-results-col">
+              <div class="savings-metric-box">
+                <span class="savings-metric-title">ESTIMATED WATER SAVED / SEASON</span>
+                <span class="savings-metric-number" id="calcWaterSaved">182,000 L</span>
+                <span class="savings-metric-sub">Up to 45% reduction vs traditional flood irrigation</span>
+              </div>
+              <div class="savings-submetrics">
+                <div class="savings-subitem">
+                  <small>Pumping Energy Saved</small>
+                  <strong id="calcEnergySaved">~ 94 kWh</strong>
+                </div>
+                <div class="savings-subitem">
+                  <small>Estimated Input Cost Saved</small>
+                  <strong id="calcCostSaved">₹ 14,560 / $175</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="water-mgmt-grid">
+          <!-- Water Requirement Comparison Chart -->
+          <div class="card water-chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">SEASONAL WATER BENCHMARKS</div>
+                <h3 class="card-title">Crop Water Requirement Comparison (mm/season)</h3>
+              </div>
+              <span class="badge badge-soft">FAO Benchmark Ranges</span>
+            </div>
+            <div class="chart-container" style="position: relative; height: 300px;">
+              <canvas id="cropBenchmarkChart"></canvas>
+            </div>
+            <p class="chart-caption">Comparison of estimated seasonal water demand across standard agricultural crops under typical warm-temperate conditions.</p>
+          </div>
+
+          <!-- Irrigation Method Efficiency Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">SYSTEM BENCHMARKS</div>
+                <h3 class="card-title">Irrigation Method Efficiency</h3>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Application Efficiency</th>
+                    <th>Water Savings</th>
+                    <th>Best Suited For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>Drip / Trickle</b></td>
+                    <td><span class="efficiency-pill high">85% – 95%</span></td>
+                    <td>Up to 50% vs flood</td>
+                    <td>Tomatoes, Orchards, Vegetables, Row Crops</td>
+                  </tr>
+                  <tr>
+                    <td><b>Sprinkler Systems</b></td>
+                    <td><span class="efficiency-pill med">70% – 80%</span></td>
+                    <td>20% – 30% vs flood</td>
+                    <td>Wheat, Maize, Groundnut, Undulating Terrain</td>
+                  </tr>
+                  <tr>
+                    <td><b>Alternate Wetting & Drying</b></td>
+                    <td><span class="efficiency-pill med">65% – 75%</span></td>
+                    <td>Up to 30% in paddy</td>
+                    <td>Rice (Lowland Paddy)</td>
+                  </tr>
+                  <tr>
+                    <td><b>Furrow Irrigation</b></td>
+                    <td><span class="efficiency-pill low">55% – 65%</span></td>
+                    <td>Baseline</td>
+                    <td>Cotton, Maize, Sugarcane on moderate slopes</td>
+                  </tr>
+                  <tr>
+                    <td><b>Surface Flooding</b></td>
+                    <td><span class="efficiency-pill poor">40% – 50%</span></td>
+                    <td>Lowest efficiency</td>
+                    <td>Traditional field crops (High evaporation loss)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Water Saving Principles Cards -->
+        <div class="principles-grid">
+          <div class="principle-card">
+            <div class="principle-icon-wrapper">🌾</div>
+            <h4>Mulching & Soil Cover</h4>
+            <p>Applying 5-10 cm of organic crop residue or agricultural plastic prevents surface evaporation, keeps root zone 3-5°C cooler, and suppresses weed moisture theft.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-icon-wrapper">⏰</div>
+            <h4>Night & Twilight Scheduling</h4>
+            <p>Shifting irrigation cycles to between 8:00 PM and 6:00 AM reduces wind drift and solar evaporation losses by up to 25%, maximizing soil infiltration.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-icon-wrapper">⚖</div>
+            <h4>Managed Deficit Irrigation</h4>
+            <p>Applying sub-maximal water during drought-tolerant vegetative growth stages concentrates water during critical flowering and grain-filling windows without hurting harvest yields.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 6: FIELD MANAGEMENT                                        -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-fields">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">PARCEL INVENTORY</div>
+            <h2>Field Management</h2>
+            <p>Register, track, and monitor agricultural plots with specific soil profiles and acreage.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openFieldModal()">+ Register New Field</button>
+        </div>
+
+        <div class="fields-grid" id="fieldsContainer">
+          <!-- Field cards populated dynamically -->
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 7: ANALYTICS & HISTORY                                     -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-analytics">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">HISTORICAL RECORDS</div>
+            <h2>Irrigation History & Analytics</h2>
+            <p>Audit trail of generated irrigation recommendations and cumulative water consumption.</p>
+          </div>
+          <div class="header-badges">
+            <span class="badge badge-soft" id="historyCounter">0 Logs Recorded</span>
+          </div>
+        </div>
+
+        <div class="analytics-charts-grid">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">RECOMMENDATIONS</div>
+                <h3 class="card-title">Priority Distribution</h3>
+              </div>
+            </div>
+            <div class="chart-container" style="position: relative; height: 240px;">
+              <canvas id="priorityChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">DEPTH LOGS</div>
+                <h3 class="card-title">Recommended Water Depth (mm)</h3>
+              </div>
+            </div>
+            <div class="chart-container" style="position: relative; height: 240px;">
+              <canvas id="depthHistoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-eyebrow">DATABASE LOGS</div>
+              <h3 class="card-title">Complete Recommendation Log</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Field / Plot</th>
+                  <th>Crop</th>
+                  <th>Soil</th>
+                  <th>Current Moisture</th>
+                  <th>Water Needed (Litres)</th>
+                  <th>Depth (mm)</th>
+                  <th>Priority</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr><td colspan="9" class="text-center empty-state">Loading history logs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 8: SYSTEM & SETTINGS                                       -->
+      <!-- ============================================================== -->
+      <section class="tab-pane" id="pane-settings">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">CONFIGURATION & DIAGNOSTICS</div>
+            <h2>System & Provider Settings</h2>
+            <p>System runtime configuration, AI provider keys, evaluation guidelines, and deployment information.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Diagnostics Card -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">HEALTH CHECK</div>
+                <h3 class="card-title">System Diagnostics</h3>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="loadSystemStatus()">Refresh Status</button>
+            </div>
+            <div class="status-list" id="diagnosticsList">
+              <div class="status-row">
+                <span>AI Reasoning Provider</span>
+                <strong id="diagProvider">Checking...</strong>
+              </div>
+              <div class="status-row">
+                <span>Weather Telemetry</span>
+                <strong id="diagWeather">Checking...</strong>
+              </div>
+              <div class="status-row">
+                <span>Database Persistence</span>
+                <strong id="diagDb">SQLite (data/agriagent.db)</strong>
+              </div>
+              <div class="status-row">
+                <span>Environment</span>
+                <strong id="diagEnv">Checking...</strong>
+              </div>
+              <div class="status-row">
+                <span>Supported Crops</span>
+                <strong id="diagCrops">7 Crops (Rice, Wheat, Maize, Tomato, Cotton, Sugarcane, Groundnut)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuration Instructions Card -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">SECURITY GUIDELINES</div>
+                <h3 class="card-title">Environment Variables Configuration</h3>
+              </div>
+            </div>
+            <p class="settings-info-text">AgriAgent securely manages AI provider credentials using server environment variables. API keys are never exposed to the frontend browser or committed to git.</p>
+            <div class="code-box">
+              <pre><code># Copy .env.example to .env and configure either key:
+GEMINI_API_KEY=your_gemini_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
+
+# Optional: Force provider
+# AGENTX_PROVIDER=gemini
+
+# For Render Deployment:
+# Add GEMINI_API_KEY or GROQ_API_KEY under Environment Variables in Render Dashboard</code></pre>
+            </div>
+          </div>
+
+          <!-- Hackathon Judging Contract Card -->
+          <div class="card settings-full-width">
+            <div class="card-header">
+              <div>
+                <div class="card-eyebrow">JUDGING SPECIFICATION</div>
+                <h3 class="card-title">Hackathon CLI Contract & Verification</h3>
+              </div>
+              <span class="badge badge-success">CLI Preserved</span>
+            </div>
+            <p>AgriAgent preserves the exact judging CLI and JSON contract in <code>main.py</code> while simultaneously running the full Flask web dashboard.</p>
+            <div class="code-box">
+              <pre><code># Test JSON output contract:
+python main.py --json --dry-run "Check rice water requirements"
+# Output format: {"answer": str, "trace": [{"thought": str, "tool": str, "args": dict, "observation": str}]}
+
+# Run test suite:
+python -m unittest discover tests</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Register Field Modal -->
+      <div class="modal-backdrop hidden" id="fieldModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Register Monitored Field</h3>
+            <button class="modal-close" onclick="closeFieldModal()">✕</button>
+          </div>
+          <form id="newFieldForm" onsubmit="submitFieldForm(event)">
+            <div class="form-group">
+              <label for="newFieldName">Field / Plot Name <span class="required">*</span></label>
+              <input type="text" id="newFieldName" class="form-control" placeholder="e.g. East Valley Plot 4" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newFieldCrop">Crop <span class="required">*</span></label>
+                <select id="newFieldCrop" class="form-control">
+                  <option value="rice">Rice (Paddy)</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="maize">Maize</option>
+                  <option value="tomato">Tomato</option>
+                  <option value="cotton">Cotton</option>
+                  <option value="sugarcane">Sugarcane</option>
+                  <option value="groundnut">Groundnut</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="newFieldSoil">Soil Type <span class="required">*</span></label>
+                <select id="newFieldSoil" class="form-control">
+                  <option value="loamy">Loamy</option>
+                  <option value="sandy">Sandy</option>
+                  <option value="clayey">Clayey</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newFieldArea">Area (Acres) <span class="required">*</span></label>
+                <input type="number" id="newFieldArea" class="form-control" min="0.01" max="10000" step="0.1" value="2.0" required>
+              </div>
+              <div class="form-group">
+                <label for="newFieldLocation">Zone / Location</label>
+                <input type="text" id="newFieldLocation" class="form-control" placeholder="e.g. Zone B - North Ridge">
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" onclick="closeFieldModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Field</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Toast Notification Container -->
+      <div class="toast-container" id="toastContainer"></div>
+
+      <!-- Application Footer -->
+      <footer class="app-footer">
+        <div class="footer-left">
+          <strong>AgriAgent</strong> — AI-Powered Smart Agriculture & Irrigation Platform
+        </div>
+        <div class="footer-right">
+          <span>AgentX Hackathon 2026</span> · <span>Deterministic AgTech Platform</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Main JavaScript Bundle -->
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
